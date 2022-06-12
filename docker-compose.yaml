@@ -1,0 +1,29 @@
+version: '3.8'
+
+volumes:
+  db_volume:
+
+services:
+  payment-service:
+    build: ./
+    command: ["./wait-for-postgres.sh", "./cmd/payment/main"]
+    ports:
+      - 8000:${SERVICE_PORT}
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+    env_file:
+      - ./.env
+
+  db:
+    restart: always
+    image: postgres:14
+    volumes:
+    - "db_volume:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - ./.env
