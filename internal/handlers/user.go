@@ -7,16 +7,20 @@ import (
 	"strconv"
 
 	"github.com/Pythonyan3/payment-service/internal/models"
-	"github.com/Pythonyan3/payment-service/internal/services"
 
 	"github.com/gorilla/mux"
 )
 
-type UserHandler struct {
-	service *services.UserService
+type UserService interface {
+	GetUserTransactionsById(userId int) ([]*models.Transaction, error)
+	GetUserTransactionsByEmail(userEmail string) ([]*models.Transaction, error)
 }
 
-func NewUserHandler(service *services.UserService) *UserHandler {
+type UserHandler struct {
+	service UserService
+}
+
+func NewUserHandler(service UserService) *UserHandler {
 	/*User routes handler constructor function.*/
 	return &UserHandler{service: service}
 }
