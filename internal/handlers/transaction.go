@@ -23,13 +23,18 @@ type TransactionService interface {
 	UpdateStatus(transactionId int, status string) (*models.Transaction, error)
 }
 
-type TransactionHandler struct {
-	service TransactionService
+type AuthMiddleware interface {
+	AuthMiddleware(next http.HandlerFunc) http.HandlerFunc
 }
 
-func NewTransactionHandler(service TransactionService) *TransactionHandler {
+type TransactionHandler struct {
+	service        TransactionService
+	authMiddleware AuthMiddleware
+}
+
+func NewTransactionHandler(service TransactionService, middleware AuthMiddleware) *TransactionHandler {
 	/*Transaction routes handler constructor function.*/
-	return &TransactionHandler{service: service}
+	return &TransactionHandler{service: service, authMiddleware: middleware}
 }
 
 func (handler *TransactionHandler) InitRoutes(router *mux.Router) {
@@ -39,7 +44,10 @@ func (handler *TransactionHandler) InitRoutes(router *mux.Router) {
 	subRouter.HandleFunc("/", handler.CreateTransaction).Methods("POST")
 	subRouter.HandleFunc("/{pk:[0-9]+}/", handler.RetrieveTransaction).Methods("GET")
 	subRouter.HandleFunc("/{pk:[0-9]+}/cancel/", handler.CancelTransaction).Methods("PUT", "PATCH")
-	subRouter.HandleFunc("/{pk:[0-9]+}/proceed/", handler.ProceedTransaction).Methods("PUT", "PATCH")
+	subRouter.HandleFunc(
+		"/{pk:[0-9]+}/proceed/",
+		handler.authMiddleware.AuthMiddleware(handler.ProceedTransaction),
+	).Methods("PUT", "PATCH")
 }
 
 func (handler *TransactionHandler) RetrieveTransaction(w http.ResponseWriter, r *http.Request) {

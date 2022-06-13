@@ -9,6 +9,7 @@ import (
 	"github.com/Pythonyan3/payment-service/config"
 	"github.com/Pythonyan3/payment-service/internal/database"
 	"github.com/Pythonyan3/payment-service/internal/handlers"
+	"github.com/Pythonyan3/payment-service/internal/middleware"
 	"github.com/Pythonyan3/payment-service/internal/repositories"
 	"github.com/Pythonyan3/payment-service/internal/server"
 	"github.com/Pythonyan3/payment-service/internal/services"
@@ -34,7 +35,9 @@ func (app *Application) Run() error {
 	// services
 	var transactionService *services.TransactionService
 	var userService *services.UserService
-	//handlers
+	// middlewares
+	var authMiddleware *middleware.AuthMiddleware
+	// handlers
 	var userHandler *handlers.UserHandler
 	var transactionHandler *handlers.TransactionHandler
 
@@ -55,8 +58,11 @@ func (app *Application) Run() error {
 	transactionService = services.NewTransactionService(transactionRepository)
 	userService = services.NewUserService(userRepository)
 
+	// create middleware
+	authMiddleware = middleware.NewAuthMiddleware(cfg.JWTSignKey)
+
 	// create handlers
-	transactionHandler = handlers.NewTransactionHandler(transactionService)
+	transactionHandler = handlers.NewTransactionHandler(transactionService, authMiddleware)
 	userHandler = handlers.NewUserHandler(userService)
 
 	router = mux.NewRouter().PathPrefix("/api").Subrouter()
