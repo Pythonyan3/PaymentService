@@ -82,6 +82,12 @@ docker-compose build
 docker-compose up
 ```
 
+## 🥼 Tests 🧪
+
+```bash
+go test ./...
+```
+
 ## API Doc 📚
 
 Service allow to work with ``Transaction`` entity.
@@ -156,5 +162,6 @@ Example of response:
 ## Points to make service better 😎
 
 1. 📄 Add pagination to responses of endpoints which possibly can return a lot of data (list of transactions endpoints);
-2.  🤓 According to most of data retrieving operations from DB used PK or FK a good way to add some indexes to it;
+2. 🤪 Add custom error structs to make response error messages more readable;
+2. 🤓 According to most of data retrieving operations from DB used PK or FK a good way to add some indexes to it;
 3. 🧐 Usage of ORM can make work with entities in DB more simply.
