@@ -2,8 +2,6 @@
 
 ## 🤫 \*Some company* test task ✔️
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 ## Overview 🔍
 🌐 REST API Web-Service for transactions management 🔒. Designed with Golang (net/http package) 🦦 and PostgreSQL (sqlx package)💽.
 
