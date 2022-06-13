@@ -19,7 +19,7 @@ type Transaction struct {
 type TransactionInput struct {
 	UserId    int    `json:"user_id" validate:"required,gt=0"`
 	UserEmail string `json:"user_email" validate:"required,email"`
-	Amount    int64  `json:"amount" validate:"required,gt=0"`
+	Amount    int64  `json:"amount" validate:"required"`
 	Currency  string `json:"currency" validate:"required,len=3,uppercase"`
 }
 
