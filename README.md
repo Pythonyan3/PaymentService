@@ -61,6 +61,7 @@ SERVICE_PORT=8000
 DB_PASSWORD=your_pass
 DB_NAME=payments
 DB_SSL_MODE=disable
+JWT_SIGN_KEY=71f2e67f177eb057d1a3def53985aeb2e4ba5aef6261f0dcecd35e4b78eb2930
 ```
 
 Run service without docker:
@@ -90,7 +91,7 @@ Service allow to work with ``Transaction`` entity.
 1. `/api/transactions/ (POST)` - creating new transaction;
 2. `/api/transactions/{pk}/ (GET)` - retrieve transaction info;
 3. `/api/transactions/{pk}/cancel/ (PUT/PATCH)` - update transaction status to `CANCELED`;
-4. `/api/transactions/{pk}/proceed/ (PUT/PATCH)` - set transaction status to `CANCELED`;
+4. `/api/transactions/{pk}/proceed/ (PUT/PATCH)` - set transaction status to `SUCCESS` or `FAILED` (requires authentication);
 5. `/api/users/{pk}/transactions/ (GET)` - retrieve list of user transactions;
 6. `/api/users/{email}/transactions/ (GET)` - retrieve list of user transactions.
 
@@ -109,7 +110,7 @@ Service allow to work with ``Transaction`` entity.
 Example of response:
 ```json
 {
-	"id": 1
+	"id": 1,
 	"user_id": 1,
 	"user_email": "email@mail.com",
 	"amount": 100,
@@ -122,6 +123,16 @@ Example of response:
 
 #### `/api/transactions/{pk}/proceed/` (PUT/PATCH) - request body example:
 
+🔒 Note: reqires auth JWT token, you can use token below (in case you use same `JWT_SIGN_KEY` in your .env file as in example above)
+
+Headers:
+```json
+{
+	"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NTU5NzY5NjcsImlhdCI6MTY1NTExMjk2N30.PudQzyMfLrXVMHffp8Ti_JDWPOoBrG5GVdj2DIFV-yE"
+}
+```
+
+Body:
 ```json
 {
 	"status": "SUCCESS"
@@ -131,7 +142,7 @@ Example of response:
 Example of response:
 ```json
 {
-	"id": 1
+	"id": 1,
 	"user_id": 1,
 	"user_email": "email@mail.com",
 	"amount": 100,
@@ -142,7 +153,7 @@ Example of response:
 }
 ```
 
-### Points to make service better 😎
+## Points to make service better 😎
 
 1. 📄 Add pagination to responses of endpoints which possibly can return a lot of data (list of transactions endpoints);
 2.  🤓 According to most of data retrieving operations from DB used PK or FK a good way to add some indexes to it;
