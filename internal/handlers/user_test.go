@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/Pythonyan3/payment-service/internal/models"
 	mock_services "github.com/Pythonyan3/payment-service/internal/services/mocks"
@@ -20,7 +20,7 @@ import (
 func TestHandler_TransactionsListByUserId(t *testing.T) {
 	// Arrange
 	type mockBehaviour func(service *mock_services.MockUserService, userId int)
-	timeNow, _ := time.Parse("2006-01-02T15:04:05Z07:00", "2022-06-12T18:09:14.796895+03:00")
+	serializedTransactions, _ := json.Marshal(transactionSlice)
 
 	testTable := []struct {
 		name                string
@@ -31,27 +31,16 @@ func TestHandler_TransactionsListByUserId(t *testing.T) {
 	}{
 		{
 			name:                "Test list of transactions (ok)",
-			userId:              1,
+			userId:              transaction.UserId,
 			expectedStatusCode:  http.StatusOK,
-			expectedRequestBody: "[{\"id\":1,\"user_id\":1,\"user_email\":\"email@mail.ru\",\"amount\":1500,\"currency\":\"EUR\",\"created_at\":\"2022-06-12T18:09:14.796895+03:00\",\"updated_at\":\"2022-06-12T18:09:14.796895+03:00\",\"status\":\"NEW\"}]\n",
+			expectedRequestBody: string(serializedTransactions) + "\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userId int) {
-				service.EXPECT().GetUserTransactionsById(userId).Return([]*models.Transaction{
-					{
-						Id:        1,
-						UserId:    1,
-						UserEmail: "email@mail.ru",
-						Amount:    1500,
-						Currency:  "EUR",
-						CreatedAt: timeNow,
-						UpdatedAt: timeNow,
-						Status:    "NEW",
-					},
-				}, nil)
+				service.EXPECT().GetUserTransactionsById(userId).Return(transactionSlice, nil)
 			},
 		},
 		{
 			name:                "Test list of transactions (empty)",
-			userId:              1,
+			userId:              transaction.UserId,
 			expectedStatusCode:  http.StatusOK,
 			expectedRequestBody: "[]\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userId int) {
@@ -60,7 +49,7 @@ func TestHandler_TransactionsListByUserId(t *testing.T) {
 		},
 		{
 			name:                "Test list of transactions (service error)",
-			userId:              1,
+			userId:              transaction.UserId,
 			expectedStatusCode:  http.StatusInternalServerError,
 			expectedRequestBody: "Internal Server Error\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userId int) {
@@ -99,7 +88,7 @@ func TestHandler_TransactionsListByUserId(t *testing.T) {
 func TestHandler_TransactionsListByUserEmail(t *testing.T) {
 	// Arrange
 	type mockBehaviour func(service *mock_services.MockUserService, userEmail string)
-	timeNow, _ := time.Parse("2006-01-02T15:04:05Z07:00", "2022-06-12T18:09:14.796895+03:00")
+	serializedTransactions, _ := json.Marshal(transactionSlice)
 
 	testTable := []struct {
 		name                string
@@ -110,27 +99,16 @@ func TestHandler_TransactionsListByUserEmail(t *testing.T) {
 	}{
 		{
 			name:                "Test list of transactions (ok)",
-			userEmail:           "email@mail.ru",
+			userEmail:           transaction.UserEmail,
 			expectedStatusCode:  http.StatusOK,
-			expectedRequestBody: "[{\"id\":1,\"user_id\":1,\"user_email\":\"email@mail.ru\",\"amount\":1500,\"currency\":\"EUR\",\"created_at\":\"2022-06-12T18:09:14.796895+03:00\",\"updated_at\":\"2022-06-12T18:09:14.796895+03:00\",\"status\":\"NEW\"}]\n",
+			expectedRequestBody: string(serializedTransactions) + "\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userEmail string) {
-				service.EXPECT().GetUserTransactionsByEmail(userEmail).Return([]*models.Transaction{
-					{
-						Id:        1,
-						UserId:    1,
-						UserEmail: "email@mail.ru",
-						Amount:    1500,
-						Currency:  "EUR",
-						CreatedAt: timeNow,
-						UpdatedAt: timeNow,
-						Status:    "NEW",
-					},
-				}, nil)
+				service.EXPECT().GetUserTransactionsByEmail(userEmail).Return(transactionSlice, nil)
 			},
 		},
 		{
 			name:                "Test list of transactions (empty)",
-			userEmail:           "email@mail.ru",
+			userEmail:           transaction.UserEmail,
 			expectedStatusCode:  http.StatusOK,
 			expectedRequestBody: "[]\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userEmail string) {
@@ -139,7 +117,7 @@ func TestHandler_TransactionsListByUserEmail(t *testing.T) {
 		},
 		{
 			name:                "Test list of transactions (service error)",
-			userEmail:           "email@mail.ru",
+			userEmail:           transaction.UserEmail,
 			expectedStatusCode:  http.StatusInternalServerError,
 			expectedRequestBody: "Internal Server Error\n",
 			mockBehaviour: func(service *mock_services.MockUserService, userEmail string) {
