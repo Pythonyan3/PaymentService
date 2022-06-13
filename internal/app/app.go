@@ -22,7 +22,7 @@ func (app *Application) Run() error {
 	// application entrypoint method, initialize whole things.
 	log.Println("Service is starting...")
 
-	// initialize all variables
+	// declaring all of variables
 	var err error
 	var cfg *config.Config
 	var router *mux.Router
@@ -38,7 +38,6 @@ func (app *Application) Run() error {
 	var userHandler *handlers.UserHandler
 	var transactionHandler *handlers.TransactionHandler
 
-	// initialize variables
 	// parse config (env variables)
 	cfg = config.GetConfig()
 
@@ -56,7 +55,7 @@ func (app *Application) Run() error {
 	transactionService = services.NewTransactionService(transactionRepository)
 	userService = services.NewUserService(userRepository)
 
-	// create handler
+	// create handlers
 	transactionHandler = handlers.NewTransactionHandler(transactionService)
 	userHandler = handlers.NewUserHandler(userService)
 
@@ -66,7 +65,7 @@ func (app *Application) Run() error {
 	userHandler.InitRoutes(router)
 	transactionHandler.InitRoutes(router)
 
-	// create and starting server server
+	// create and starting server
 	httpServer = server.NewServer(cfg.ServicePort, router)
 
 	go func() {

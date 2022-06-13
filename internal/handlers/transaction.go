@@ -17,11 +17,17 @@ import (
 
 const dbNotFoundErrorMsg = "sql: no rows in result set"
 
-type TransactionHandler struct {
-	service *services.TransactionService
+type TransactionService interface {
+	GetById(transactionId int) (*models.Transaction, error)
+	Create(transactionInput *models.TransactionInput) (*models.Transaction, error)
+	UpdateStatus(transactionId int, status string) (*models.Transaction, error)
 }
 
-func NewTransactionHandler(service *services.TransactionService) *TransactionHandler {
+type TransactionHandler struct {
+	service TransactionService
+}
+
+func NewTransactionHandler(service TransactionService) *TransactionHandler {
 	/*Transaction routes handler constructor function.*/
 	return &TransactionHandler{service: service}
 }
