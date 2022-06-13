@@ -20,6 +20,7 @@ type Config struct {
 	DBPassword  string `envconfig:"DB_PASSWORD" required:"true"`
 	DBName      string `envconfig:"DB_NAME" required:"true"`
 	DBSSLMode   string `envconfig:"DB_SSL_MODE" required:"true"`
+	JWTSignKey  string `envconfig:"JWT_SIGN_KEY" required:"true"`
 }
 
 func GetConfig() *Config {
